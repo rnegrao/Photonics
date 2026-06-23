@@ -25,7 +25,11 @@ if __name__ == "__main__":
     '''initialize field components'''
     Ez = np.zeros(z_val.size)
     Hy = np.zeros(z_val.size)
-    
+
+    plt.ion()
+    plt.figure(figsize=(10,4))
+
+        
     for n in range(t_val.size):     
         '''update Electric Field Ez using spatial derivatives of Hy'''
         for i in range(1, z_val.size-1):
@@ -39,13 +43,14 @@ if __name__ == "__main__":
         pulse = np.exp( - (( t_val[n] - t0)/spread ) ** 2 )
         Ez[source_pos] = pulse
 
-    '''plot final timestep'''
-    plt.figure(figsize=(10,4))
-    plt.plot(z_val*1e6, Ez, label="Electric field [Ex(z)]", color = "black")
-    plt.plot(z_val*1e6, Hy, label="Magnetic field [Hy(z)]", color = "red", linestyle = "--")
-    plt.title("1D FDTD Ex/Hy Wave Propagation (Gaussian Pulse)")
-    plt.xlabel("Position [\mu m]")
-    plt.ylabel("Field Amplitude")
-    plt.legend()
-    plt.grid(True)
-    plt.show()
+        '''plot final timestep'''
+        plt.clf()
+        plt.title(f"1D FDTD Ex/Hy Wave Propagation (Gaussian Pulse). Time: {t_val[n]}")
+        plt.xlabel("Position z [\mu m]")
+        plt.ylabel("Field Amplitude")
+        plt.plot(z_val*1e6, Ez, label="Electric field [Ex(z)]", color = "black")
+        plt.plot(z_val*1e6, Hy, label="Magnetic field [Hy(z)]", color = "red", linestyle = "--")
+        plt.grid(True)
+        plt.legend()
+        plt.draw()
+        plt.pause(0.01)
