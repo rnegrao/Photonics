@@ -3,13 +3,15 @@ import matplotlib.pylab as plt
 import scipy.constants as constant
 
 def epsilon_r(z_val):
-    epsilon_vacuum = 1. + np.empty_like(z_val)
-    epsilon_mask = np.abs(z_val) >= 2.5
+    epsilon_vacuum = np.empty_like(z_val)
     epsilon_r = np.empty_like(z_val)
-    epsilon_r[epsilon_mask] = 0.9
-    epsilon_r = epsilon_r + epsilon_vacuum
+    epsilon_vacuum_mask = np.abs(z_val) >= 2.0
+    epsilon_vacuum[epsilon_vacuum_mask] = 1. 
+    epsilon_r_mask = np.abs(z_val) < 2.0
+    epsilon_r[epsilon_r_mask] = 10
+    epsilon_i = epsilon_r + epsilon_vacuum
 
-    return epsilon_r
+    return epsilon_i
 
 def mu_r(z_val):
 
@@ -21,7 +23,7 @@ if __name__ == "__main__":
     dz = h
     '''compute timestep - Courant stability condition'''
     dt = h/( 2. * constant.speed_of_light )
-    t_val = np.arange(0. , 12.e-14, dt)
+    t_val = np.arange(0. , 20.e-14, dt)
     '''1D medium geometry definition'''
     L = 5e-6
     z_val = np.arange(-L, L, dz)
@@ -45,7 +47,6 @@ if __name__ == "__main__":
         '''update Magnetic Field Hy using spatial derivatives of Ez'''
         for i in range(z_val.size-1):
             Hy[i] = Hy[i] - mh * ( Ez[i+1] - Ez[i] )
-            
         '''update Electric Field Ez using spatial derivatives of Hy'''
         for i in range(1, z_val.size):
             Ez[i] = Ez[i] - me[i] * ( Hy[i] - Hy[i-1] )        
@@ -57,7 +58,7 @@ if __name__ == "__main__":
 
         '''plot final timestep'''
         plt.clf()
-        plt.title(f"1D FDTD Ex/Hy Wave Propagation (Gaussian Pulse). Time: {t_val[n]}")
+        plt.title(f"1D FDTD Ex/Hy Wave Propagation (Gaussian Pulse). Time: {t_val[n]} (s)")
         plt.xlabel("Position z [\mu m]")
         plt.ylabel("Field Amplitude")
         plt.plot(z_val*1e6, Ez, label="Electric field [Ex(z)]", color = "black")
