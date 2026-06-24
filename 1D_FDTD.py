@@ -38,6 +38,7 @@ if __name__ == "__main__":
     '''initialize field components'''
     Ez = np.zeros(z_val.size)
     Hy = np.zeros(z_val.size)
+    Ez_source = np.zeros(z_val.size)
 
     plt.figure(figsize=(10,4))        
     for n in range(t_val.size):     
@@ -51,7 +52,8 @@ if __name__ == "__main__":
             
         '''inject Source Wave (source at the center)''' 
         pulse = np.exp( - (( t_val[n] - t0)/spread ) ** 2 )
-        Ez[source_pos] = pulse #not in good position
+        Ez_source[source_pos] = pulse
+        Ez = Ez + Ez_source
 
         '''plot final timestep'''
         plt.clf()
